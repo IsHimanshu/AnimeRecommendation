@@ -17,7 +17,7 @@ services:
       - anime_recommender
     networks:
       - main_network
-  sinha_frontend:
+   frontend:
     container_name: frontend_app
     build: 
       context: ./frontend/
