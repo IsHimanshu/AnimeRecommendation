@@ -1,1 +1,1 @@
-web: docker-compose up
+CMD: docker-compose up
