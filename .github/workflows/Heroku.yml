@@ -12,7 +12,10 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
-
+      - name: Build and Push Docker Images
+        run: |
+          docker-compose build
+          docker-compose push
       - name: Login to Heroku Container Registry
         run: heroku container:login
 
