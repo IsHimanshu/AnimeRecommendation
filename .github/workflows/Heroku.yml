@@ -1,0 +1,29 @@
+name: Deploy to Heroku
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Login to Heroku Container Registry
+        run: heroku container:login
+
+      - name: Build and Push Docker Images
+        run: |
+          heroku container:push -a ${{ secrets.HEROKU_APP_NAME }} anime_recommender
+          heroku container:push -a ${{ secrets.HEROKU_APP_NAME }} backend
+          heroku container:push -a ${{ secrets.HEROKU_APP_NAME }} frontend
+
+      - name: Release Docker Images
+        run: |
+          heroku container:release -a ${{ secrets.HEROKU_APP_NAME }} anime_recommender
+          heroku container:release -a ${{ secrets.HEROKU_APP_NAME }} backend
+          heroku container:release -a ${{ secrets.HEROKU_APP_NAME }} frontend
