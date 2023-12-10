@@ -3,30 +3,31 @@ name: Deploy to Heroku
 on:
   push:
     branches:
-      - main
+      - main  
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-      - name: Build and Push Docker Images
-        run: |
-          docker-compose build
-          docker-compose push
-      - name: Login to Heroku Container Registry
-        run: heroku container:login
+    - name: Checkout Repository
+      uses: actions/checkout@v2
 
-      - name: Build and Push Docker Images
-        run: |
-          heroku container:push -a ${{ secrets.HEROKU_APP_NAME }} anime_recommender
-          heroku container:push -a ${{ secrets.HEROKU_APP_NAME }} backend
-          heroku container:push -a ${{ secrets.HEROKU_APP_NAME }} frontend
+    - name: Set up Docker
+      uses: docker/setup-docker@v2
 
-      - name: Release Docker Images
-        run: |
-          heroku container:release -a ${{ secrets.HEROKU_APP_NAME }} anime_recommender
-          heroku container:release -a ${{ secrets.HEROKU_APP_NAME }} backend
-          heroku container:release -a ${{ secrets.HEROKU_APP_NAME }} frontend
+    - name: Build and Push Docker Images
+      env:
+        HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+      run: |
+        echo $HEROKU_API_KEY | docker login -u _ --password-stdin registry.heroku.com
+        docker build -t registry.heroku.com/animerec -f backend/Dockerfile .
+        docker push registry.heroku.com/animerec
+        docker build -t registry.heroku.com/animerec -f frontend/Dockerfile .
+        docker push registry.heroku.com/animerec
+
+    - name: Deploy to Heroku
+      env:
+        HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+      run: |
+        sudo docker-compose -f docker-compose.heroku.yml up -d
