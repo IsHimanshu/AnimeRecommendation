@@ -1,3 +1,4 @@
+version: '3'
 services:
   anime_recommender:
     container_name: anime_mongoDB
@@ -6,9 +7,10 @@ services:
       - main_network
     ports:
       - "27017:27017"
+
   backend:
     container_name: backend_app
-    build: 
+    build:
       context: ./backend/
       dockerfile: Dockerfile
     ports:
@@ -17,9 +19,10 @@ services:
       - anime_recommender
     networks:
       - main_network
-   frontend:
+
+  frontend:
     container_name: frontend_app
-    build: 
+    build:
       context: ./frontend/
       dockerfile: Dockerfile
     ports:
@@ -28,8 +31,6 @@ services:
       - backend
     networks:
       - main_network
-   
 
 networks:
   main_network:
-   
